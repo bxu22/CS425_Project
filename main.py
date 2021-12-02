@@ -9,10 +9,9 @@ def create_server_connection(host_name, database_name, user_name, user_password)
         database=database_name,
         user=user_name,
         password=user_password)
-        )
         print("Connection to database is successful")
-    except Error as err:
-        print(f"Error: '{err}'")
+    except:
+        print('Error')
 
 #if we need to create another database
 # def create_database(connection, query):
@@ -29,8 +28,8 @@ def execute_query(connection, query):
         cursor.execute(query)
         connection.commit()
         print("Query successful")
-    except Error as err:
-        print(f"Error: '{err}'")
+    except:
+        print('Error')
 
 def read_query(connection, query):
     cursor=connection.cursor()
@@ -39,8 +38,8 @@ def read_query(connection, query):
         cursor.execute(query)
         result=cursor.fetchall()
         return result
-    except Error as err:
-        print(f"Error: '{err}'")
+    except:
+        print('Error')
 
 #QUERIES
 #drop table Organ_Donor;
@@ -311,14 +310,14 @@ while(True):
 
     try:
         connection = create_server_connection(host_n, db_n, user_n, user_p)
-        print('Login successful')
+        print('Login successful as ' + user_n)
         #will deal with user types later (maybe in try-excepts)
         while(True):
             print('What do you want to do? \n1: Add data to tables, 2: View tables & lists, 3: View reports, 4: Setup the database (only once)')
             main_ans = input()
 
             #add to a table
-            if main_ans == 1:
+            if main_ans == '1':
                 print('Tables: Donor, Organ')
                 table_name = input('Which table do you want to add to: ')
                 data_add = input('Enter the data: ')
@@ -327,13 +326,13 @@ while(True):
                     try:                                                                    # since donor and organ have different attributes, also you have to specify the parameters
                         execute_query(connection, data_add_q)
                         print('added data to table')
-                    except Error as err: #wrong data, or user cannot do this action.
-                        print(f"Error: '{err}'")
+                    except: #wrong data, or user cannot do this action.
+                        print('Error: User permission denied.')
                 else:
                     print('Tried to reach a wrong table, go back to main menu')
 
             #view tables & lists
-            elif main_ans == 2: # (!)update queries related to view like blood_donor_list
+            elif main_ans == '2': # (!)update queries related to view like blood_donor_list
                 view_q = '' #this is the query that is going to be run after the if-conditions.
                 print('View: Donor, Organ, Patient, Blood_Donor_List, Organ_Donor_List, Donor_Match_List')
                 view_name = input('Which view do you want: ')
@@ -343,10 +342,10 @@ while(True):
 
                 elif(view_name == 'Organ_Donor_List'):
                     do_search = input('Do you want to (1) view all or (2) search by sth:')
-                    if (do_search == 1): #view all table
-                        view_q = 'SELECT * FROM '+view_name
+                    if (do_search == '1'): #view all table
+                        view_q = 'SELECT * FROM '+ view_name
 
-                    elif (do_search == 2): #search by sth
+                    elif (do_search == '2'): #search by sth
                         search_by = input('Search by region, organ, doctor')
                         search_val = input('Search value: ')
                         #write the query here
@@ -354,10 +353,10 @@ while(True):
 
                 elif(view_name == 'Blood_Donor_List'):
                     do_search = input('Do you want to (1) view all or (2) search by sth:')
-                    if (do_search == 1): #view all table
+                    if (do_search == '1'): #view all table
                         view_q = 'SELECT * FROM ' + view_name
 
-                    elif (do_search == 2): #search by sth
+                    elif (do_search == '2'): #search by sth
                         search_by = input('Search by region, blood_type, typeAvailability, age_group')
                         search_val = input('Search value: ')
                         #write the query here
@@ -365,19 +364,19 @@ while(True):
 
                 elif(view_name == 'Donor_Match_List'): #look further into
                     organ_or_blood = input('Do you want to look at (1) Organ matches or (2) Blood matches: ')
-                    if(organ_or_blood == 1):
+                    if(organ_or_blood == '1'):
                         do_search = input('Do you want to (1) view all or (2) search by organ:')
-                        if (do_search == 1): #view all table
+                        if (do_search == '1'): #view all table
                             view_q = Organ_Match_List
-                        elif (do_search == 2):
+                        elif (do_search == '2'):
                             organ_n = input('Which organ do you want to search for?: ')
                             view_q = Organ_Match_List + ' WHERE Organ_Donor.organ_name=' + organ_n
 
-                    elif(organ_or_blood == 2):
+                    elif(organ_or_blood == '2'):
                         do_search = input('Do you want to (1) view all or (2) search by blood:')
-                        if (do_search == 1): #view all table
+                        if (do_search == '1'): #view all table
                             view_q = Blood_Match_List
-                        elif (do_search == 2):
+                        elif (do_search == '2'):
                             blood_type_n = input('Which blood type do you want to search for?: ')
                             view_q = Blood_Match_List + ' WHERE Blood_Donor.blood_type=' + blood_type_n
 
@@ -386,14 +385,14 @@ while(True):
                     results = read_query(connection, view_q)
                     for result in results:
                         print(result)
-                except Error as err: #wrong data, or user cannot do this action.
-                    print(f"Error: '{err}'")
+                except: #wrong data, or user cannot do this action.
+                    print('Error')
 
             #view reports
-            elif main_ans == 3:
+            elif main_ans == '3':
                 pass
             #create the database, should be run only once.
-            elif main_ans == 4:
+            elif main_ans == '4':
                 try:
                     execute_query(connection, create_Organ_Donor_table)
                     execute_query(connection, create_Blood_Donor_table)
@@ -414,9 +413,9 @@ while(True):
                     execute_query(connection, create_Patient_User_role)
                     
                     #ADD DUMMY DATA TOO
-                except Error as err:
-                    print(f"Error: '{err}'")
+                except:
+                    print('Error')
             else:
                 print('Invalid request. input 1, 2, 3 or 4.') #return back to question
-    except Error as err:
-        print(f"Error: '{err}'")
+    except:
+        print('Error')
