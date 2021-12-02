@@ -221,27 +221,41 @@ foreign key (hospital_name) references hospital(name) on delete cascade
 #CHANGE THIS
 #drop table Blood_donor_list;
 #Should be search
-create_Blood_Donor_List_table="""
-create table Blood_Donor_List (
-ID VARCHAR(100) not null,
-region VARCHAR(100),
-typeAvailability VARCHAR(100),
-age_group INTEGER,
-primary key(ID)
-);
-"""
+# create_Blood_Donor_List_table="""
+# create table Blood_Donor_List (
+# ID VARCHAR(100) not null,
+# region VARCHAR(100),
+# typeAvailability VARCHAR(100),
+# age_group INTEGER,
+# primary key(ID)
+# );
+# """
 
 #CHANGE THIS
 #drop table organ_donor_list;
 #Should be search
-create_Organ_Donor_List_table="""
-create table Organ_Donor_List (
-ID VARCHAR(100) not null,
-organ VARCHAR(100),
-speacialized_doctor VARCHAR(100),
-primary key(ID)
-);
+# create_Organ_Donor_List_table="""
+# create table Organ_Donor_List (
+# ID VARCHAR(100) not null,
+# organ VARCHAR(100),
+# speacialized_doctor VARCHAR(100),
+# primary key(ID)
+# );
+# """
+
+Blood_Match_List="""
+SELECT * FROM Organ_Donor
+JOIN Patient
+ON Organ_Donor.blood_type=Patient.blood_type
 """
+
+Organ_Match_List="""
+SELECT * FROM Organ_Donor
+JOIN Patient
+ON Organ_Donor.blood_type=Patient.blood_type
+AND Organ_Donor.organ_name=Patient.need_organ
+"""
+
 create_Blood_Donor_List_index="""
 create index Blood_Donor_List_index on Blood_Donor_List(ID);
 """
@@ -318,7 +332,7 @@ while(True):
             #view tables & lists
             elif main_ans = 2: # (!)update queries related to view like blood_donor_list
                 view_q="" #this is the query that is going to be run after the if-conditions.
-                print("View: Donor, Organ, Patient, Blood_Donor_List, Organ_Donor_List")
+                print("View: Donor, Organ, Patient, Blood_Donor_List, Organ_Donor_List, Donor_Match_List")
                 view_name = input("Which view do you want: ")
 
                 if(view_name=="Donor" or view_name=="Organ" or view_name=="Patient"):
@@ -345,9 +359,27 @@ while(True):
                         search_val = input("Search value: ")
                         #write the query here
                         view_q = "SELECT * FROM Organ_Donor WHERE "+ search_by+"="+search_val
+
+                elif(view_name==Donor_Match_List):
+                    organ_or_blood = input("Do you want to look at (1) Organ matches or (2) Blood matches: ")
+                    if(organ_or_blood==1):
+                        do_search = input("Do you want to (1) view all or (2) search by organ:")
+                        if (do_search==1): #view all table
+                            view_q = Organ_Match_List
+                        elif (do_search==2):
+                            organ_n = input("which organ do you want to search for?: ")
+                            view_q = Organ_Match_List+" WHERE Organ_Donor.organ_name="+organ_n
+
+                    elif(organ_or_blood==2):
+                        do_search = input("Do you want to (1) view all or (2) search by organ:")
+                        if (do_search==1): #view all table
+                            view_q = Blood_Match_List
+
                 #view_q is set according to the request.
                 try:
-                    execute_query(connection, view_q)
+                    results = read_query(connection, view_q)
+                    for result in results:
+                        print(result)
                 except Error as err: #wrong data, or user cannot do this action.
                     print(f"Error: '{err}'")
 
