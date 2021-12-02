@@ -95,7 +95,7 @@ primary key (name)
 #drop table organ;
 create_Organ_table="""
 create table organ(
-organ_name VARCHAR(100)not null,
+organ_name VARCHAR(100) not null,
 donor_name VARCHAR(100) not null,
 recipient VARCHAR(100),
 life integer,
@@ -244,9 +244,9 @@ foreign key (hospital_name) references hospital(name) on delete cascade
 # """
 
 Blood_Match_List="""
-SELECT * FROM Organ_Donor
+SELECT * FROM Blood_Donor
 JOIN Patient
-ON Organ_Donor.blood_type=Patient.blood_type
+ON Blood_Donor.blood_type=Patient.blood_type
 """
 
 Organ_Match_List="""
@@ -254,6 +254,7 @@ SELECT * FROM Organ_Donor
 JOIN Patient
 ON Organ_Donor.blood_type=Patient.blood_type
 AND Organ_Donor.organ_name=Patient.need_organ
+JOIN Organ ON Organ.recipient=Patient.name
 """
 
 create_Blood_Donor_List_index="""
@@ -360,7 +361,7 @@ while(True):
                         #write the query here
                         view_q = "SELECT * FROM Organ_Donor WHERE "+ search_by+"="+search_val
 
-                elif(view_name==Donor_Match_List):
+                elif(view_name=="Donor_Match_List"): #look further into
                     organ_or_blood = input("Do you want to look at (1) Organ matches or (2) Blood matches: ")
                     if(organ_or_blood==1):
                         do_search = input("Do you want to (1) view all or (2) search by organ:")
@@ -371,9 +372,12 @@ while(True):
                             view_q = Organ_Match_List+" WHERE Organ_Donor.organ_name="+organ_n
 
                     elif(organ_or_blood==2):
-                        do_search = input("Do you want to (1) view all or (2) search by organ:")
+                        do_search = input("Do you want to (1) view all or (2) search by blood:")
                         if (do_search==1): #view all table
                             view_q = Blood_Match_List
+                        elif (do_search==2):
+                            blood_type_n = input("which blood type do you want to search for?: ")
+                            view_q = Blood_Match_List+" WHERE Blood_Donor.blood_type="+blood_type_n
 
                 #view_q is set according to the request.
                 try:
@@ -406,7 +410,8 @@ while(True):
                     execute_query(connection, create_Admin_role)
                     execute_query(connection, create_Doctor_User_role)
                     execute_query(connection, create_Patient_User_role)
-                except Error as err: 
+                    #ADD DUMMY DATA TOO
+                except Error as err:
                     print(f"Error: '{err}'")
             else:
                 print("Invalid request. input 1, 2, 3 or 4.") #return back to question
