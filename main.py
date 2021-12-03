@@ -1,3 +1,7 @@
+# Authors:
+# Ali Guzelyel
+# Brian Xu
+
 import psycopg2
 
 def read_query(connection, query):
