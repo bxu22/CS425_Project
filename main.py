@@ -210,8 +210,27 @@ GRANT ALL PRIVILEGES ON TABLE Patient TO patient_user;
 '''
 
 random_data = '''
-INSERT INTO Organ_Donor (name, blood_type, )
+INSERT INTO Organ_Donor (name, blood_type, last_donation_time, organ_name)
+VALUES ('Bob', 'A', '02/20/2000', 'liver'), ('Bob2', 'AB', '02/20/2001', 'liver'),
+('Bob3', '0', '02/20/2000', 'liver');
 
+INSERT INTO Blood_Donor (name, blood_type, last_donation_time, region)
+VALUES ('Jack', 'B', '01/10/2010', 'Chicago','IL'), ('Jack2', 'B', '02/10/2010', 'Chicago','IL'),
+('Jack3', 'B', '03/10/2010', 'Chicagoo','IL'), ('Jack4', 'B', '04/10/2010', 'Chicagoo','IL');
+
+INSERT INTO Patient (name, blood_type)
+VALUES ('patient1', 'A'), ('patient1', 'B'), ('patient1', 'AB'), ('patient4', '0');
+
+INSERT INTO Hospital (name, region)
+VALUES ('Charlie', 'Chicago, IL'), ('Bernie', 'Chicag, IL'),
+('Smith', 'Chicago, IL'), ('GREATEST_HOSPITAL', 'Chica, IL');
+
+INSERT INTO Doctor (name, number_of_operations)
+VALUES ('doctor1', 2), ('doctor2', 0), ('doctor1', 1), ('doctor1', 2);
+
+INSERT INTO Donor_Application (blood_type, age, last_donation_time)
+VALUES ('A', 25, '10/20/2015'), ('B', 24, '10/20/2016'),
+('AB', 20, '10/20/2010'), ('0', 29, '10/20/2011');
 '''
 
 
@@ -233,15 +252,35 @@ while(True):
 
             #add to a table
             if main_ans == '1':
-                print('Tables: Donor, Organ, Patient, Doctor, Hospital')
+                print('Tables: Donor(Blood or Organ), Organ, Patient, Doctor, Hospital')
                 table_name = input('Which table do you want to add to: ')
                 data_add = input('Enter the data: ')
                 if table_name == 'Donor':
-                    data_add_q = 'INSERT INTO ' + table_name + ' VALUES ' + data_add
+                    table_name = input('Blood or Organ: ')
+                    if table_name == 'Blood': 
+                        data_add_q = 'INSERT INTO Blood_Donor (name, blood_type, last_donation_time, region) VALUES ' + data_add
+                        cursor.execute(data_add_q)
+                        connection.commit()
+                    elif table_name == 'Organ':
+                        data_add_q = 'INSERT INTO Organ_Donor  VALUES ' + data_add
+                        cursor.execute(data_add_q)
+                        connection.commit()
+                    else:
+                        print('Blood or Organ only!')
+                elif table_name == 'Organ':
+                    data_add_q = 'INSERT INTO Organ (donor_name, organ_name) VALUES ' + data_add
                     cursor.execute(data_add_q)
                     connection.commit()
-                elif table_name == 'Organ':
-                    data_add_q = 'INSERT INTO Organ VALUES ' + data_add
+                elif table_name == 'Patient':
+                    data_add_q = 'INSERT INTO Patient (name, blood_type) VALUES ' + data_add
+                    cursor.execute(data_add_q)
+                    connection.commit()
+                elif table_name == 'Doctor':
+                    data_add_q = 'INSERT INTO Doctor (name, number_of_operations) VALUES ' + data_add
+                    cursor.execute(data_add_q)
+                    connection.commit()
+                elif table_name == 'Hospital':
+                    data_add_q = 'INSERT INTO Hospital (name, region) VALUES ' + data_add
                     cursor.execute(data_add_q)
                     connection.commit()
                 else:
@@ -383,6 +422,9 @@ while(True):
                     cursor.execute(create_Patient_User_role)
 
                     print('Tables are created.')
+
+                    # random data
+                    cursor.execute(random_data)
 
                     connection.commit()
                 except:
