@@ -1,35 +1,4 @@
 import psycopg2
-import pandas as pd
-
-def create_server_connection(host_name, database_name, user_name, user_password):
-    connection=None
-    try:
-        connection = psycopg2.connect(
-        host=host_name,
-        database=database_name,
-        user=user_name,
-        password=user_password)
-        print("Connection to database is successful")
-    except:
-        print('Error')
-
-#if we need to create another database
-# def create_database(connection, query):
-#     cursor = connection.cursor()
-#     try:
-#         cursor.execute(query)
-#         print("Database created successfully")
-#     except Error as err:
-#         print(f"Error: '{err}'")
-
-def execute_query(connection, query):
-    cursor=connection.cursor()
-    try:
-        cursor.execute(query)
-        connection.commit()
-        print("Query successful")
-    except:
-        print('Error')
 
 def read_query(connection, query):
     cursor=connection.cursor()
@@ -41,10 +10,10 @@ def read_query(connection, query):
     except:
         print('Error')
 
-#QUERIES
-#drop table Organ_Donor;
-create_Organ_Donor_table="""
-create table Organ_Donor (
+# QUERIES
+# drop table Organ_Donor;
+create_Organ_Donor_table = '''
+CREATE TABLE Organ_Donor (
 name VARCHAR(100) NOT NULL,
 blood_type VARCHAR(10) NOT NULL,
 age INTEGER,
@@ -52,17 +21,16 @@ chronic_diseases VARCHAR(100),
 drug_usage BOOLEAN,
 last_tattoo_date DATE,
 medication_history VARCHAR(100),
-last_donation_time DATE,
+last_donation_time DATE NOT NULL,
 phone_or_email VARCHAR(100),
-city VARCHAR(100),
-state VARCHAR(100),
+region VARCHAR(100),
 organ_name VARCHAR(100) NOT NULL,
 PRIMARY KEY (name, organ_name)
 );
-"""
-#drop table Blood_Donor;
-create_Blood_Donor_table="""
-create table Blood_Donor (
+'''
+# drop table Blood_Donor;
+create_Blood_Donor_table = '''
+CREATE TABLE Blood_Donor (
 name VARCHAR(100) NOT NULL,
 blood_type VARCHAR(10) NOT NULL,
 age INTEGER,
@@ -70,17 +38,16 @@ chronic_diseases VARCHAR(100),
 drug_usage BOOLEAN,
 last_tattoo_date DATE,
 medication_history VARCHAR(100),
-last_donation_time DATE,
+last_donation_time DATE NOT NULL,
 phone_or_email VARCHAR(100),
-city VARCHAR(100),
-state VARCHAR(100),
+region VARCHAR(100) NOT NULL,
 PRIMARY KEY (name, blood_type)
 );
-"""
+'''
 
-#drop table Patient;
-create_Patient_table="""
-create table Patient (
+# drop table Patient;
+create_Patient_table = '''
+CREATE TABLE Patient (
 id SERIAL NOT NULL,
 name VARCHAR(100) NOT NULL,
 blood_type VARCHAR(10) NOT NULL,
@@ -90,11 +57,11 @@ need_blood VARCHAR(10),
 pays INTEGER,
 PRIMARY KEY (id)
 );
-"""
+'''
 
-#drop table Organ;
-create_Organ_table="""
-create table Organ (
+# drop table Organ;
+create_Organ_table = '''
+CREATE TABLE Organ (
 donor_name VARCHAR(100) NOT NULL,
 organ_name VARCHAR(100) NOT NULL,
 recipient INTEGER,
@@ -104,34 +71,34 @@ PRIMARY KEY (donor_name, organ_name),
 FOREIGN KEY (donor_name, organ_name) REFERENCES Organ_Donor(name, organ_name) ON DELETE CASCADE,
 FOREIGN KEY (recipient) REFERENCES Patient(id)
 );
-"""
+'''
 
-#drop table Hospital;
-create_Hospital_table="""
-create table Hospital (
+# drop table Hospital;
+create_Hospital_table = '''
+CREATE TABLE Hospital (
 id SERIAL NOT NULL,
 name VARCHAR(100) NOT NULL,
-city VARCHAR(100) NOT NULL,
-state VARCHAR(100) NOT NULL,
+region VARCHAR(100) NOT NULL,
 hospitalization_cost INTEGER,
 PRIMARY KEY (id)
 );
-"""
+'''
 
-#drop table Doctor;
-create_Doctor_table="""
-create table Doctor (
+# drop table Doctor;
+create_Doctor_table = '''
+CREATE TABLE Doctor (
 id SERIAL NOT NULL,
 name VARCHAR(100) NOT NULL,
 specialization VARCHAR(100),
 fee INTEGER,
+number_of_operations INTEGER DEFAULT 0,
 PRIMARY KEY (id)
 );
-"""
+'''
 
-#drop table Donor_Application;
-create_Donor_Application_table="""
-create table Donor_Application (
+# drop table Donor_Application;
+create_Donor_Application_table = '''
+CREATE TABLE Donor_Application (
 id SERIAL NOT NULL,
 blood_type VARCHAR(10),
 age INTEGER,
@@ -139,79 +106,39 @@ chronic_diseases VARCHAR(100),
 drug_usage VARCHAR(100),
 last_tattoo_date DATE,
 medication_history VARCHAR(100),
-last_donation_time DATE,
+last_donation_time DATE NOT NULL,
 phone_or_email VARCHAR(100),
-city VARCHAR(100),
-state VARCHAR(100),
+region VARCHAR(100),
 PRIMARY KEY (id)
 );
-"""
-#drop table Works_At;
-create_Works_At_table="""
-create table Works_At (
+'''
+
+# drop table Works_At;
+create_Works_At_table = '''
+CREATE TABLE Works_At (
 doctor_id INTEGER NOT NULL,
 hospital_id INTEGER NOT NULL,
 PRIMARY KEY (doctor_id, hospital_id),
 FOREIGN KEY (doctor_id) REFERENCES Doctor(id) ON DELETE CASCADE,
 FOREIGN KEY (hospital_id) REFERENCES Hospital(id) ON DELETE CASCADE
 );
-"""
+'''
 
-#drop table Patient_Need;
-create_Patient_Need_table="""
-create table Patient_Need (
-patient_ID INTEGER NOT NULL,    
-organ_name VARCHAR(100),
-organ_donorr VARCHAR(100),
-blood_type VARCHAR(10),
-blood_donorr VARCHAR(100),
-PRIMARY KEY (patient_ID),
-FOREIGN KEY (patient_ID) REFERENCES Patient(id) ON DELETE CASCADE,
-FOREIGN KEY (organ_donorr, organ_name) REFERENCES Organ_Donor(name, organ_name),
-FOREIGN KEY (blood_donorr, blood_type) REFERENCES Blood_Donor(name, blood_type)
-);
-"""
-
-#drop table Operates;
-create_Operates_table="""
-create table Operates (
+# drop table Operates;
+create_Operates_table = '''
+CREATE TABLE Operates (
 doctor_id INTEGER NOT NULL,
 patient_id INTEGER NOT NULL,
 PRIMARY KEY (doctor_id, patient_id),
 FOREIGN KEY (doctor_id) REFERENCES Doctor(id) ON DELETE CASCADE,
 FOREIGN KEY (patient_id) REFERENCES Patient(id) ON DELETE CASCADE
 );
-"""
+'''
 
-#drop table Pays;
-create_Pays_table="""
-create table Pays (
-patient_id INTEGER NOT NULL,
-hospital_id INTEGER NOT NULL,
-PRIMARY KEY (patient_id),
-FOREIGN KEY (patient_id) REFERENCES Patient(id) ON DELETE CASCADE,
-FOREIGN KEY (hospital_id) REFERENCES Hospital(id) ON DELETE CASCADE
-);
-"""
 
-#drop table In_;
-create_In_table="""
-create table in_ (
-doctor_id INTEGER,
-patient_id INTEGER,
-hospital_id INTEGER NOT NULL,
-PRIMARY KEY (hospital_id),
-PRIMARY KEY (doctor_id),
-PRIMARY KEY (patient_id),
-FOREIGN KEY (patient_id) REFERENCES Patient(id),
-FOREIGN KEY (doctor_id) REFERENCES Doctor(id),
-FOREIGN KEY (hospital_id) REFERENCES Hospital(id) ON DELETE CASCADE
-);
-"""
-
-#drop table Applies;
-create_Applies_table="""
-create table applies (
+# drop table Applies;
+create_Applies_table = '''
+CREATE TABLE applies (
 blood_type VARCHAR(10) NOT NULL,
 organ_name VARCHAR(100) NOT NULL,
 donor_id INTEGER NOT NULL,
@@ -220,114 +147,103 @@ PRIMARY KEY (donor_id, hospital_id),
 FOREIGN KEY (donor_id) REFERENCES Donor_Application(id) ON DELETE CASCADE,
 FOREIGN KEY (hospital_id) REFERENCES Hospital(id) ON DELETE CASCADE
 );
-"""
+'''
 
-# BEING CHANGED AS QUERIES
-#drop table Blood_donor_list;
-#Should be search
-# create_Blood_Donor_List_table="""
-# create table Blood_Donor_List (
-# ID VARCHAR(100) not null,
-# region VARCHAR(100),
-# typeAvailability VARCHAR(100),
-# age_group INTEGER,
-# primary key(ID)
-# );
-# """
-
-# BEING CHANGED AS QUERIES
-#drop table organ_donor_list;
-#Should be search
-# create_Organ_Donor_List_table="""
-# create table Organ_Donor_List (
-# ID VARCHAR(100) not null,
-# organ VARCHAR(100),
-# speacialized_doctor VARCHAR(100),
-# primary key(ID)
-# );
-# """
-
-Blood_Match_List="""
-SELECT * FROM Blood_Donor
-JOIN Patient
-ON Blood_Donor.blood_type=Patient.blood_type
-"""
-
-Organ_Match_List="""
+Donor_Organ_Match_List = '''
 SELECT * FROM Organ_Donor
 JOIN Patient
 ON Organ_Donor.blood_type=Patient.blood_type
-AND Organ_Donor.organ_name=Patient.need_organ
-JOIN Organ ON Organ.recipient=Patient.name
-"""
+AND Organ_Donor.organ_name=Patient.need_organ;
+'''
 
-create_Blood_Donor_List_index="""
-create index Blood_Donor_List_index on Blood_Donor_List(ID);
-"""
-create_Organ_Donor_List_index="""
-create index Organ_Donor_List_index on Organ_Donor_List(ID);
-"""
+Donor_Blood_Match_List = '''
+SELECT * FROM Blood_Donor
+JOIN Patient
+ON Blood_Donor.blood_type=Patient.blood_type
+OR (SELECT blood_type FROM Organ_Donor WHERE blood_type='O')=Patient.blood
+OR Organ_Donor.blood_type=(SELECT blood_type FROM Patient WHERE blood_type='AB')
+'''
 
-#CHANGE THIS
-#drop table all_donors;
-#Should be search
-create_All_Donors_table="""
-create table all_donors (
-blood_donor_id VARCHAR(100),
-organ_donor_id VARCHAR(100),
-foreign key (blood_donor_id) references Blood_Donor_List(id),
-foreign key (organ_donor_id) references Organ_Donor_List(id)
-);
-"""
-create_Admin_role="""
+Income_Report = '''
+SELECT SUM(fee)
+FROM Doctor
+'''
+
+Operations_Report = '''
+SELECT COUNT(number_of_operations), region, name
+FROM Doctor 
+GROUP BY region
+ORDER BY COUNT(number_of_operations) DESC;
+'''
+
+create_Blood_Donor_index = '''
+CREATE INDEX Blood_Donor_index ON Blood_Donor(blood_type);
+'''
+
+create_Organ_Donor_index = '''
+CREATE INDEX Organ_Donor_index ON Organ(organ_name);
+'''
+
+create_Hospital_Region_index = '''
+CREATE INDEX Hospital_Region_index ON Hospital(region);
+'''
+
+create_Doctor_Specialization_index = '''
+CREATE INDEX Doctor_Specialization_index ON Doctor(specialization);
+'''
+
+create_Admin_role = '''
 CREATE ROLE admin WITH LOGIN ENCRYPTED PASSWORD '123456789';
-GRANT ALL PRIVILEDGE on * TO admin;
-"""
-create_Doctor_User_role="""
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON ALL TABLES IN SCHEMA public 
+TO admin;
+'''
+create_Doctor_User_role = '''
 CREATE ROLE doctor_user;
-GRANT ALL PRIVILEDGE on Patient TO doctor_user;
-GRANT ALL PRIVILEDGE on Organ_Donor TO doctor_user;
-"""
-create_Patient_User_role="""
+GRANT ALL PRIVILEGES ON TABLE Patient TO doctor_user;
+GRANT ALL PRIVILEGES ON TABLE Organ_Donor TO doctor_user;
+'''
+
+create_Patient_User_role = '''
 CREATE ROLE patient_user;
-GRANT INSERT PRIVILEDGE on Donor_Application TO patient_user;
-"""
+GRANT ALL PRIVILEGES ON TABLE Patient TO patient_user;
+'''
 
-#grant doctorUser TO Patient ;
-#grant doctorUser to Organ_donor;
+random_data = '''
+INSERT INTO Organ_Donor (name, blood_type, )
 
-#Program runs here
-
-
+'''
 
 
+# Program runs here
 while(True):
-    print('Please login to the database.')
-    host_n= input('Enter your host name: ')
-    db_n= input('Enter your database name: ')
-    user_n=input('Enter your user name: ') #admin, or other users.
+    print('Please login to the database. Recommended to login as postgres to setup database.')
+    host_n = input('Enter your host name: ')
+    db_n = input('Enter your database name: ')
+    user_n = input('Enter your user name: ') #admin, or other users.
     user_p = input('Enter your user password: ')
 
     try:
-        connection = create_server_connection(host_n, db_n, user_n, user_p)
+        connection = psycopg2.connect(host = host_n, database = db_n, user = user_n, password = user_p, port = '5432')
         print('Login successful as ' + user_n)
-        #will deal with user types later (maybe in try-excepts)
+        cursor = connection.cursor()
         while(True):
-            print('What do you want to do? \n1: Add data to tables, 2: View tables & lists, 3: View reports, 4: Setup the database (only once)')
+            print('What do you want to do? \n1: Add data to tables\n2: View tables & lists\n3: View reports\n4: Setup the database (only once),')
             main_ans = input()
 
             #add to a table
             if main_ans == '1':
-                print('Tables: Donor, Organ')
+                print('Tables: Donor, Organ, Patient, Doctor, Hospital')
                 table_name = input('Which table do you want to add to: ')
                 data_add = input('Enter the data: ')
-                if (table_name == 'Donor' or table_name == 'Organ'):
-                    data_add_q = 'INSERT INTO ' + table_name + ' VALUES ' + data_add        # I think this needs to be in two different if statements
-                    try:                                                                    # since donor and organ have different attributes, also you have to specify the parameters
-                        execute_query(connection, data_add_q)
-                        print('added data to table')
-                    except: #wrong data, or user cannot do this action.
-                        print('Error: User permission denied.')
+                if table_name == 'Donor':
+                    data_add_q = 'INSERT INTO ' + table_name + ' VALUES ' + data_add
+                    cursor.execute(data_add_q)
+                    connection.commit()
+                elif table_name == 'Organ':
+                    data_add_q = 'INSERT INTO Organ VALUES ' + data_add
+                    cursor.execute(data_add_q)
+                    connection.commit()
                 else:
                     print('Tried to reach a wrong table, go back to main menu')
 
@@ -337,85 +253,142 @@ while(True):
                 print('View: Donor, Organ, Patient, Blood_Donor_List, Organ_Donor_List, Donor_Match_List')
                 view_name = input('Which view do you want: ')
 
-                if(view_name == 'Donor' or view_name == 'Organ' or view_name == 'Patient'):
+                if view_name == 'Donor' or view_name == 'Organ' or view_name == 'Patient':
                     view_q = 'SELECT * FROM ' + view_name
+                    cursor.execute(view_q)
+                    datas = cursor.fetchall()
+                    for data in datas:
+                        print(data)
 
-                elif(view_name == 'Organ_Donor_List'):
+                elif view_name == 'Organ_Donor_List':
                     do_search = input('Do you want to (1) view all or (2) search by sth:')
-                    if (do_search == '1'): #view all table
+                    if do_search == '1': #view all table
                         view_q = 'SELECT * FROM '+ view_name
+                        cursor.execute(view_q)
+                        datas = cursor.fetchall()
+                        for data in datas:
+                            print(data)
 
-                    elif (do_search == '2'): #search by sth
+                    elif do_search == '2': #search by sth
                         search_by = input('Search by region, organ, doctor')
                         search_val = input('Search value: ')
                         #write the query here
                         view_q = 'SELECT * FROM Organ_Donor WHERE ' + search_by + '=' + search_val
+                        cursor.execute(view_q)
+                        datas = cursor.fetchall()
+                        for data in datas:
+                            print(data)
 
-                elif(view_name == 'Blood_Donor_List'):
+                elif view_name == 'Blood_Donor_List':
                     do_search = input('Do you want to (1) view all or (2) search by sth:')
                     if (do_search == '1'): #view all table
                         view_q = 'SELECT * FROM ' + view_name
+                        cursor.execute(view_q)
+                        datas = cursor.fetchall()
+                        for data in datas:
+                            print(data)
 
-                    elif (do_search == '2'): #search by sth
-                        search_by = input('Search by region, blood_type, typeAvailability, age_group')
+                    elif do_search == '2': #search by sth
+                        search_by = input('Search by region, blood_type, typeAvailability, age_group (=, <, <=, >, >=)')
                         search_val = input('Search value: ')
-                        #write the query here
-                        view_q = 'SELECT * FROM Organ_Donor WHERE ' + search_by + '=' + search_val
+                        if search_by == 'region':
+                            view_q = 'SELECT * FROM Blood_Donor WHERE region = ' + search_val
+                            cursor.execute(view_q)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
+                        elif search_by == 'blood_type':
+                            view_q = 'SELECT * FROM Blood_Donor WHERE blood_type = ' + search_val
+                            cursor.execute(view_q)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
+                        elif search_by == 'typeAvailability':
+                            view_q = 'SELECT * FROM Blood_Donor WHERE last_donation_time = ' + search_val
+                            cursor.execute(view_q)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
+                        elif search_by == 'age_group':
+                            view_q = 'SELECT * FROM Blood_Donor WHERE age ' + search_val
+                            cursor.execute(view_q)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
 
-                elif(view_name == 'Donor_Match_List'): #look further into
+                elif view_name == 'Donor_Match_List': #look further into
                     organ_or_blood = input('Do you want to look at (1) Organ matches or (2) Blood matches: ')
                     if(organ_or_blood == '1'):
                         do_search = input('Do you want to (1) view all or (2) search by organ:')
                         if (do_search == '1'): #view all table
-                            view_q = Organ_Match_List
-                        elif (do_search == '2'):
+                            cursor.execute(Donor_Organ_Match_List)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
+
+                        elif do_search == '2':
                             organ_n = input('Which organ do you want to search for?: ')
-                            view_q = Organ_Match_List + ' WHERE Organ_Donor.organ_name=' + organ_n
+                            view_q = Donor_Organ_Match_List + ' WHERE Organ_Donor.organ_name=' + organ_n
 
-                    elif(organ_or_blood == '2'):
+                    elif organ_or_blood == '2':
                         do_search = input('Do you want to (1) view all or (2) search by blood:')
-                        if (do_search == '1'): #view all table
-                            view_q = Blood_Match_List
-                        elif (do_search == '2'):
+                        if do_search == '1': #view all table
+                            cursor.execute(Donor_Blood_Match_List)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
+                        elif do_search == '2':
                             blood_type_n = input('Which blood type do you want to search for?: ')
-                            view_q = Blood_Match_List + ' WHERE Blood_Donor.blood_type=' + blood_type_n
-
-                #view_q is set according to the request.
-                try:
-                    results = read_query(connection, view_q)
-                    for result in results:
-                        print(result)
-                except: #wrong data, or user cannot do this action.
-                    print('Error')
-
+                            view_q = Donor_Blood_Match_List + ' WHERE Blood_Donor.blood_type=' + blood_type_n
+                
+                elif view_name == 'Income Report':
+                    cursor.execute(Income_Report)
+                    datas = cursor.fetchall()
+                    for data in datas:
+                        print(data)
+                elif view_name == 'Operations Report':
+                    cursor.execute(Operations_Report)
+                    datas = cursor.fetchall()
+                    for data in datas:
+                        print(data)
+                else: 
+                    print('')
             #view reports
             elif main_ans == '3':
                 pass
             #create the database, should be run only once.
             elif main_ans == '4':
                 try:
-                    execute_query(connection, create_Organ_Donor_table)
-                    execute_query(connection, create_Blood_Donor_table)
-                    execute_query(connection, create_Patient_table)
-                    execute_query(connection, create_Organ_table)
-                    execute_query(connection, create_Hospital_table)
-                    execute_query(connection, create_Donor_Application_table)
-                    execute_query(connection, create_Works_At_table)
-                    execute_query(connection, create_Patient_Need_table)
-                    execute_query(connection, create_Organ_table)
-                    execute_query(connection, create_Operates_table)
-                    execute_query(connection, create_Pays_table)
-                    execute_query(connection, create_In_table)
-                    execute_query(connection, create_Applies_table)
-                    execute_query(connection, create_All_Donors_table)
-                    execute_query(connection, create_Admin_role)
-                    execute_query(connection, create_Doctor_User_role)
-                    execute_query(connection, create_Patient_User_role)
-                    
-                    #ADD DUMMY DATA TOO
+                    # Tables
+                    cursor.execute(create_Organ_Donor_table)
+                    cursor.execute(create_Blood_Donor_table)
+                    cursor.execute(create_Patient_table)
+                    cursor.execute(create_Organ_table)
+                    cursor.execute(create_Hospital_table)
+                    cursor.execute(create_Doctor_table)
+                    cursor.execute(create_Donor_Application_table)
+                    cursor.execute(create_Works_At_table)
+                    cursor.execute(create_Operates_table)
+                    cursor.execute(create_Applies_table)
+
+                    # Indices
+                    cursor.execute(create_Blood_Donor_index)
+                    cursor.execute(create_Organ_Donor_index)
+                    cursor.execute(create_Hospital_Region_index)
+                    cursor.execute(create_Doctor_Specialization_index)
+
+                    # Roles
+                    cursor.execute(create_Admin_role)
+                    cursor.execute(create_Doctor_User_role)
+                    cursor.execute(create_Patient_User_role)
+
+                    print('Tables are created.')
+
+                    connection.commit()
                 except:
-                    print('Error')
+                    print('Error: Already have existing tables')
             else:
-                print('Invalid request. input 1, 2, 3 or 4.') #return back to question
+                print('Invalid request. Input 1, 2, 3, or 4.') # return back to question
     except:
         print('Error')
+        break
