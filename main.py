@@ -15,7 +15,6 @@ def read_query(connection, query):
         print('Error')
 
 # QUERIES
-# drop table Organ_Donor;
 create_Organ_Donor_table = '''
 CREATE TABLE Organ_Donor (
 name VARCHAR(100) NOT NULL,
@@ -32,7 +31,7 @@ organ_name VARCHAR(100) NOT NULL,
 PRIMARY KEY (name, organ_name)
 );
 '''
-# drop table Blood_Donor;
+
 create_Blood_Donor_table = '''
 CREATE TABLE Blood_Donor (
 name VARCHAR(100) NOT NULL,
@@ -49,7 +48,6 @@ PRIMARY KEY (name, blood_type)
 );
 '''
 
-# drop table Patient;
 create_Patient_table = '''
 CREATE TABLE Patient (
 id SERIAL NOT NULL,
@@ -63,7 +61,6 @@ PRIMARY KEY (id)
 );
 '''
 
-# drop table Organ;
 create_Organ_table = '''
 CREATE TABLE Organ (
 donor_name VARCHAR(100) NOT NULL,
@@ -77,7 +74,6 @@ FOREIGN KEY (recipient) REFERENCES Patient(id)
 );
 '''
 
-# drop table Hospital;
 create_Hospital_table = '''
 CREATE TABLE Hospital (
 id SERIAL NOT NULL,
@@ -88,7 +84,6 @@ PRIMARY KEY (id)
 );
 '''
 
-# drop table Doctor;
 create_Doctor_table = '''
 CREATE TABLE Doctor (
 id SERIAL NOT NULL,
@@ -100,7 +95,6 @@ PRIMARY KEY (id)
 );
 '''
 
-# drop table Donor_Application;
 create_Donor_Application_table = '''
 CREATE TABLE Donor_Application (
 id SERIAL NOT NULL,
@@ -117,7 +111,6 @@ PRIMARY KEY (id)
 );
 '''
 
-# drop table Works_At;
 create_Works_At_table = '''
 CREATE TABLE Works_At (
 doctor_id INTEGER NOT NULL,
@@ -128,7 +121,6 @@ FOREIGN KEY (hospital_id) REFERENCES Hospital(id) ON DELETE CASCADE
 );
 '''
 
-# drop table Operates;
 create_Operates_table = '''
 CREATE TABLE Operates (
 doctor_id INTEGER NOT NULL,
@@ -139,8 +131,6 @@ FOREIGN KEY (patient_id) REFERENCES Patient(id) ON DELETE CASCADE
 );
 '''
 
-
-# drop table Applies;
 create_Applies_table = '''
 CREATE TABLE applies (
 blood_type VARCHAR(10) NOT NULL,
@@ -197,111 +187,239 @@ CREATE INDEX Doctor_Specialization_index ON Doctor(specialization);
 '''
 
 create_Admin_role = '''
-CREATE ROLE admin WITH LOGIN ENCRYPTED PASSWORD '123456789';
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON ALL TABLES IN SCHEMA public 
-TO admin;
+CREATE ROLE admin LOGIN SUPERUSER;
+GRANT ALL PRIVILEGES ON TABLE Organ_Donor TO admin;
+GRANT ALL PRIVILEGES ON TABLE Blood_Donor TO admin;
+GRANT ALL PRIVILEGES ON TABLE Patient TO admin;
+GRANT ALL PRIVILEGES ON TABLE Organ TO admin;
+GRANT ALL PRIVILEGES ON TABLE Hospital TO admin;
+GRANT ALL PRIVILEGES ON TABLE Doctor TO admin;
+GRANT ALL PRIVILEGES ON TABLE Donor_Application TO admin;
+GRANT ALL PRIVILEGES ON TABLE Works_At TO admin;
+GRANT ALL PRIVILEGES ON TABLE Operates TO admin;
+GRANT ALL PRIVILEGES ON TABLE Applies TO admin;
+GRANT ALL PRIVILEGES ON SEQUENCE doctor_id_seq TO admin;
+GRANT ALL PRIVILEGES ON SEQUENCE donor_application_id_seq TO admin;
+GRANT ALL PRIVILEGES ON SEQUENCE hospital_id_seq TO admin;
+GRANT ALL PRIVILEGES ON SEQUENCE patient_id_seq TO admin;
 '''
+
 create_Doctor_User_role = '''
-CREATE ROLE doctor_user;
+CREATE ROLE doctor_user LOGIN NOINHERIT;
 GRANT ALL PRIVILEGES ON TABLE Patient TO doctor_user;
 GRANT ALL PRIVILEGES ON TABLE Organ_Donor TO doctor_user;
 '''
 
 create_Patient_User_role = '''
-CREATE ROLE patient_user;
+CREATE ROLE patient_user LOGIN NOINHERIT;
 GRANT ALL PRIVILEGES ON TABLE Patient TO patient_user;
 '''
 
-random_data = '''
-INSERT INTO Organ_Donor (name, blood_type, last_donation_time, organ_name)
-VALUES ('Bob', 'A', '02/20/2000', 'liver'), ('Bob2', 'AB', '02/20/2001', 'liver'),
-('Bob3', '0', '02/20/2000', 'liver');
+# random_data = '''
+# INSERT INTO Organ_Donor (name, blood_type, last_donation_time, organ_name)
+# VALUES ('Bob', 'A', '02/20/2000', 'liver'), ('Bob2', 'AB', '02/20/2001', 'liver'),
+# ('Bob3', '0', '02/20/2000', 'liver');
 
-INSERT INTO Blood_Donor (name, blood_type, last_donation_time, region)
-VALUES ('Jack', 'B', '01/10/2010', 'Chicago','IL'), ('Jack2', 'B', '02/10/2010', 'Chicago','IL'),
-('Jack3', 'B', '03/10/2010', 'Chicagoo','IL'), ('Jack4', 'B', '04/10/2010', 'Chicagoo','IL');
+# INSERT INTO Blood_Donor (name, blood_type, last_donation_time, region)
+# VALUES ('Jack', 'B', '01/10/2010', 'Chicago','IL'), ('Jack2', 'B', '02/10/2010', 'Chicago','IL'),
+# ('Jack3', 'B', '03/10/2010', 'Chicagoo','IL'), ('Jack4', 'B', '04/10/2010', 'Chicagoo','IL');
 
-INSERT INTO Patient (name, blood_type)
-VALUES ('patient1', 'A'), ('patient1', 'B'), ('patient1', 'AB'), ('patient4', '0');
+# INSERT INTO Patient (name, blood_type)
+# VALUES ('patient1', 'A'), ('patient1', 'B'), ('patient1', 'AB'), ('patient4', '0');
 
-INSERT INTO Hospital (name, region)
-VALUES ('Charlie', 'Chicago, IL'), ('Bernie', 'Chicag, IL'),
-('Smith', 'Chicago, IL'), ('GREATEST_HOSPITAL', 'Chica, IL');
+# INSERT INTO Hospital (name, region)
+# VALUES ('Charlie', 'Chicago, IL'), ('Bernie', 'Chicag, IL'),
+# ('Smith', 'Chicago, IL'), ('GREATEST_HOSPITAL', 'Chica, IL');
 
-INSERT INTO Doctor (name, number_of_operations)
-VALUES ('doctor1', 2), ('doctor2', 0), ('doctor1', 1), ('doctor1', 2);
+# INSERT INTO Doctor (name, number_of_operations)
+# VALUES ('doctor1', 2), ('doctor2', 0), ('doctor1', 1), ('doctor1', 2);
 
-INSERT INTO Donor_Application (blood_type, age, last_donation_time)
-VALUES ('A', 25, '10/20/2015'), ('B', 24, '10/20/2016'),
-('AB', 20, '10/20/2010'), ('0', 29, '10/20/2011');
+# INSERT INTO Donor_Application (blood_type, age, last_donation_time)
+# VALUES ('A', 25, '10/20/2015'), ('B', 24, '10/20/2016'),
+# ('AB', 20, '10/20/2010'), ('0', 29, '10/20/2011');
+# '''
+
+# Drop Tables
+drop_Organ_Donor_table = '''
+DROP TABLE Organ_Donor CASCADE;
 '''
 
+drop_Blood_Donor_table = '''
+DROP TABLE Blood_Donor CASCADE;
+'''
+
+drop_Patient_table = '''
+DROP TABLE Patient CASCADE;
+'''
+
+drop_Organ_table = '''
+DROP TABLE Organ CASCADE;
+'''
+
+drop_Hospital_table = '''
+DROP TABLE Hospital CASCADE;
+'''
+
+drop_Doctor_table = '''
+DROP TABLE Doctor CASCADE;
+'''
+
+drop_Donor_Application = '''
+DROP TABLE Donor_Application CASCADE;
+'''
+
+drop_Works_At = '''
+DROP TABLE Works_At CASCADE;
+'''
+
+drop_Operates_table = '''
+DROP TABLE Operates CASCADE;
+'''
+
+drop_Applies_table = '''
+DROP TABLE applies CASCADE;
+'''
+
+drop_Admin_role = '''
+DROP ROLE IF EXISTS admin;
+'''
+
+drop_Doctor_User_role = '''
+DROP ROLE IF EXISTS doctor_user;
+'''
+
+drop_Patient_User_role = '''
+DROP ROLE IF EXISTS patient_user;
+'''
 
 # Program runs here
 while(True):
-    print('Please login to the database. Recommended to login as postgres to setup database.')
-    host_n = input('Enter your host name: ')
-    db_n = input('Enter your database name: ')
-    user_n = input('Enter your user name: ') #admin, or other users.
-    user_p = input('Enter your user password: ')
+    # print('Please login to the database. Recommended to login as postgres to setup database.')
+    # host_n = input('Enter your host name: ')
+    # db_n = input('Enter your database name: ')
+    # user_n = input('Enter your user name: ')
+    # user_p = input('Enter your user password: ')
 
     try:
-        connection = psycopg2.connect(host = host_n, database = db_n, user = user_n, password = user_p, port = '5432')
-        print('Login successful as ' + user_n)
+        connection = psycopg2.connect(host = 'localhost', database = 'postgres', user = 'postgres', password = '1234', port = '5432') # Comment this line after you are done with postgres(admin) setting up database
+        # connection = psycopg2.connect(host = host_n, database = db_n, user = user_n, password = user_p, port = '5432') # Uncomment this line and the lines above for different user login
+        print('Login successful as ')# + user_n)
         cursor = connection.cursor()
         while(True):
-            print('What do you want to do? \n1: Add data to tables\n2: View tables & lists\n3: View reports\n4: Setup the database (only once),')
-            main_ans = input()
+            print('What do you want to do?\n1: Add data to tables\n2: View lists & reports\n3: Setup database/create roles (only once)\n4: Drop database/roles (only after database was created)\n5: Create user\n6: Grant\Revoke role to user (Postgres Admin only)\n7: Exit')
+            main_ans = input('Input: ')
 
             #add to a table
             if main_ans == '1':
-                print('Tables: Donor(Blood or Organ), Organ, Patient, Doctor, Hospital')
+                print('Tables:\n1: Blood_Donor\n2: Organ_Donor\n3: Organ\n4: Patient\n5: Doctor\n6: Hospital')
                 table_name = input('Which table do you want to add to: ')
-                data_add = input('Enter the data: ')
-                if table_name == 'Donor':
-                    table_name = input('Blood or Organ: ')
-                    if table_name == 'Blood': 
-                        data_add_q = 'INSERT INTO Blood_Donor (name, blood_type, last_donation_time, region) VALUES ' + data_add
-                        cursor.execute(data_add_q)
-                        connection.commit()
-                    elif table_name == 'Organ':
-                        data_add_q = 'INSERT INTO Organ_Donor  VALUES ' + data_add
-                        cursor.execute(data_add_q)
-                        connection.commit()
-                    else:
-                        print('Blood or Organ only!')
-                elif table_name == 'Organ':
-                    data_add_q = 'INSERT INTO Organ (donor_name, organ_name) VALUES ' + data_add
+                if table_name == '1': # Blood Donor
+                    name = input('Name (String): ')
+                    blood_type = input('Blood Type (String): ')
+                    age = input('Age (Integer): ')
+                    chronic_diseases = input('Chronic Diseases (String): ')
+                    drug_usage = input('On any drugs (Boolean): ')
+                    last_tattoo_date = input('Last Tattoo Date (YYYY-MM-DD): ')
+                    medication_history = input('Medication History (String): ')
+                    last_donation_time = input('Last Donation Date (YYYY-MM-DD): ')
+                    phone_or_email = input('Provide Phone or Email Address (String): ')
+                    region = input('Region (City, State) (String): ')
+                    data = (name, blood_type, age, chronic_diseases, drug_usage, last_tattoo_date, medication_history, last_donation_time, phone_or_email, region)
+                    data_add_q = 'INSERT INTO blood_donor (name, blood_type, age, chronic_diseases, drug_usage, last_tattoo_date, medication_history, last_donation_time, phone_or_email, region) VALUES (' + ', '.join(data) + ')'
                     cursor.execute(data_add_q)
                     connection.commit()
-                elif table_name == 'Patient':
-                    data_add_q = 'INSERT INTO Patient (name, blood_type) VALUES ' + data_add
+                    connection.close()
+                    print('Data has been added')
+                    break
+
+                elif table_name == '2': # Organ Donor
+                    name = input('Name (String): ')
+                    blood_type = input('Blood Type (String): ')
+                    age = input('Age (Integer): ')
+                    chronic_diseases = input('Chronic Diseases (String): ')
+                    drug_usage = input('On any drugs (Boolean): ')
+                    last_tattoo_date = input('Last Tattoo Date (YYYY-MM-DD): ')
+                    medication_history = input('Medication History (String): ')
+                    last_donation_time = input('Last Donation Date (YYYY-MM-DD): ')
+                    phone_or_email = input('Provide Phone or Email Address (String): ')
+                    region = input('Region (City, State) (String): ')
+                    organ_name = input('Organ Name (String): ')
+                    data = (name, blood_type, age, chronic_diseases, drug_usage, last_tattoo_date, medication_history, last_donation_time, phone_or_email, region, organ_name)
+                    data_add_q = 'INSERT INTO organ_donor (name, blood_type, age, chronic_diseases, drug_usage, last_tattoo_date, medication_history, last_donation_time, phone_or_email, region, organ_name) VALUES (' + ', '.join(data) + ')'
                     cursor.execute(data_add_q)
                     connection.commit()
-                elif table_name == 'Doctor':
-                    data_add_q = 'INSERT INTO Doctor (name, number_of_operations) VALUES ' + data_add
+                    connection.close()
+                    print('Data has been added')
+                    break
+
+                elif table_name == '3': # Organ
+                    donor_name = input('Donor Name (String): ')
+                    organ_name = input('Organ Name (String): ')
+                    life = input('Life number of days (Integer): ')
+                    availability_date = input('Available Date (Date): ')
+                    data = (donor_name, organ_name, life, availability_date)
+                    data_add_q = 'INSERT INTO organ (donor_name, organ_name, life, availability_date) VALUES (' + ', '.join(data) + ')'
                     cursor.execute(data_add_q)
                     connection.commit()
-                elif table_name == 'Hospital':
-                    data_add_q = 'INSERT INTO Hospital (name, region) VALUES ' + data_add
+                    connection.close()
+                    print('Data has been added')
+                    break
+
+                elif table_name == '4': # Patient
+                    name = input('Name (String): ')
+                    blood_type = input('Blood Type (String): ')
+                    age = input('Age (Integer): ')
+                    need_organ = input('Need Organ (String): ')
+                    need_blood = input('Need Blood (String): ')
+                    pays = input('Payment cost (Integer): ')
+                    data = (name, blood_type, age, need_organ, need_blood, pays)
+                    data_add_q = 'INSERT INTO patient (name, blood_type, age, need_organ, need_blood, pays) VALUES (' + ', '.join(data) + ')'
                     cursor.execute(data_add_q)
                     connection.commit()
+                    connection.close()
+                    print('Data has been added')
+                    break
+
+                elif table_name == '5': # Doctor
+                    name = input('Name (String): ')
+                    specialization = input('Specialization (String): ')
+                    fee = input('Fee (Integer): ')
+                    number_of_operations = input('Number of Operations (Integer): ')
+                    data = (name, specialization, fee, number_of_operations)
+                    data_add_q = 'INSERT INTO doctor (name, specialization, fee, number_of_operations) VALUES (' + ', '.join(data) + ')'
+                    cursor.execute(data_add_q)
+                    connection.commit()
+                    connection.close()
+                    print('Data has been added')
+                    break
+
+                elif table_name == '6': # Hospital
+                    name = input('Hospital Name (String): ')
+                    region = input('Region (City, State) (String): ')
+                    hospitalization_cost = input('Hospitalization Cost (Integer): ')
+                    data = (name, region, hospitalization_cost)
+                    data_add_q = 'INSERT INTO hospital (name, region, hospitalization_cost) VALUES (' + ', '.join(data) + ')'
+                    cursor.execute(data_add_q)
+                    connection.commit()
+                    connection.close()
+                    print('Data has been added')
+                    break
+
                 else:
                     print('Tried to reach a wrong table, go back to main menu')
 
             #view tables & lists
             elif main_ans == '2': # (!)update queries related to view like blood_donor_list
                 view_q = '' #this is the query that is going to be run after the if-conditions.
-                print('View: Donor, Organ, Patient, Blood_Donor_List, Organ_Donor_List, Donor_Match_List')
+                print('View: Organ_Donor_List, Blood_Donor_List, Donor_Match_List, OperationDonor, Organ, Patient')
                 view_name = input('Which view do you want: ')
-
                 if view_name == 'Donor' or view_name == 'Organ' or view_name == 'Patient':
                     view_q = 'SELECT * FROM ' + view_name
                     cursor.execute(view_q)
                     datas = cursor.fetchall()
                     for data in datas:
                         print(data)
+                        break
 
                 elif view_name == 'Organ_Donor_List':
                     do_search = input('Do you want to (1) view all or (2) search by sth:')
@@ -311,6 +429,7 @@ while(True):
                         datas = cursor.fetchall()
                         for data in datas:
                             print(data)
+                        break
 
                     elif do_search == '2': #search by sth
                         search_by = input('Search by region, organ, doctor')
@@ -321,6 +440,7 @@ while(True):
                         datas = cursor.fetchall()
                         for data in datas:
                             print(data)
+                        break
 
                 elif view_name == 'Blood_Donor_List':
                     do_search = input('Do you want to (1) view all or (2) search by sth:')
@@ -330,6 +450,7 @@ while(True):
                         datas = cursor.fetchall()
                         for data in datas:
                             print(data)
+                        break
 
                     elif do_search == '2': #search by sth
                         search_by = input('Search by region, blood_type, typeAvailability, age_group (=, <, <=, >, >=)')
@@ -340,24 +461,31 @@ while(True):
                             datas = cursor.fetchall()
                             for data in datas:
                                 print(data)
+                            break
+
                         elif search_by == 'blood_type':
                             view_q = 'SELECT * FROM Blood_Donor WHERE blood_type = ' + search_val
                             cursor.execute(view_q)
                             datas = cursor.fetchall()
                             for data in datas:
                                 print(data)
+                            break
+
                         elif search_by == 'typeAvailability':
                             view_q = 'SELECT * FROM Blood_Donor WHERE last_donation_time = ' + search_val
                             cursor.execute(view_q)
                             datas = cursor.fetchall()
                             for data in datas:
                                 print(data)
+                            break
+
                         elif search_by == 'age_group':
                             view_q = 'SELECT * FROM Blood_Donor WHERE age ' + search_val
                             cursor.execute(view_q)
                             datas = cursor.fetchall()
                             for data in datas:
                                 print(data)
+                            break
 
                 elif view_name == 'Donor_Match_List': #look further into
                     organ_or_blood = input('Do you want to look at (1) Organ matches or (2) Blood matches: ')
@@ -368,10 +496,16 @@ while(True):
                             datas = cursor.fetchall()
                             for data in datas:
                                 print(data)
+                            break
 
                         elif do_search == '2':
                             organ_n = input('Which organ do you want to search for?: ')
                             view_q = Donor_Organ_Match_List + ' WHERE Organ_Donor.organ_name=' + organ_n
+                            cursor.execute(view_q)
+                            datas = cursor.fetchall()
+                            for data in datas:
+                                print(data)
+                            break
 
                     elif organ_or_blood == '2':
                         do_search = input('Do you want to (1) view all or (2) search by blood:')
@@ -380,27 +514,35 @@ while(True):
                             datas = cursor.fetchall()
                             for data in datas:
                                 print(data)
+                            break
+
                         elif do_search == '2':
                             blood_type_n = input('Which blood type do you want to search for?: ')
                             view_q = Donor_Blood_Match_List + ' WHERE Blood_Donor.blood_type=' + blood_type_n
+                            cursor.execute(view_q)
+                            for data in datas:
+                                print(data)
+                            break
                 
                 elif view_name == 'Income Report':
                     cursor.execute(Income_Report)
                     datas = cursor.fetchall()
                     for data in datas:
                         print(data)
+                    break
+
                 elif view_name == 'Operations Report':
                     cursor.execute(Operations_Report)
                     datas = cursor.fetchall()
                     for data in datas:
                         print(data)
+                    break
+
                 else: 
-                    print('')
-            #view reports
-            elif main_ans == '3':
-                pass
+                    print('Error not a view.')
+
             #create the database, should be run only once.
-            elif main_ans == '4':
+            elif main_ans == '3':
                 try:
                     # Tables
                     cursor.execute(create_Organ_Donor_table)
@@ -419,22 +561,88 @@ while(True):
                     cursor.execute(create_Organ_Donor_index)
                     cursor.execute(create_Hospital_Region_index)
                     cursor.execute(create_Doctor_Specialization_index)
-
-                    # Roles
-                    cursor.execute(create_Admin_role)
-                    cursor.execute(create_Doctor_User_role)
-                    cursor.execute(create_Patient_User_role)
-
                     print('Tables are created.')
 
                     # random data
-                    cursor.execute(random_data)
+                    # cursor.execute(random_data)
+                    connection.commit()
+                    
+                    cursor.execute(create_Admin_role)
+                    cursor.execute(create_Doctor_User_role)
+                    cursor.execute(create_Patient_User_role)
+                    print('Roles are created.')
 
                     connection.commit()
+                    connection.close()
                 except:
-                    print('Error: Already have existing tables')
+                    print('Error: Any error has occurred.')
+                break
+
+            # delete database, only run once after database is created
+            elif main_ans == '4':
+                try:
+                    cursor.execute(drop_Applies_table)
+                    cursor.execute(drop_Blood_Donor_table)
+                    cursor.execute(drop_Donor_Application)
+                    cursor.execute(drop_Operates_table)
+                    cursor.execute(drop_Organ_table)
+                    cursor.execute(drop_Works_At)
+                    connection.commit()
+
+                    cursor.execute(drop_Doctor_table)
+                    cursor.execute(drop_Hospital_table)
+                    cursor.execute(drop_Organ_Donor_table)
+                    cursor.execute(drop_Patient_table)
+                    connection.commit()
+                    print('Tables are dropped.')
+
+                    cursor.execute(drop_Admin_role)
+                    cursor.execute(drop_Doctor_User_role)
+                    cursor.execute(drop_Patient_User_role)
+                    print('Roles are dropped.')
+
+                    connection.commit()
+                    connection.close()
+                except:
+                    print('Error: Any error has occurred.')
+                break
+            elif main_ans == '5':
+                username = input('Input a username: ')
+                password = input('Input a password: ')
+                view_q = 'CREATE USER ' + username + ' WITH ENCRYPTED PASSWORD ' + password
+                cursor.execute(view_q)
+                connection.commit()
+                connection.close()
+                print('User created')
+                break
+            elif main_ans == '6':
+                sec_ans = input('1: Grant\n2: Revoke\nInput: ')
+                if sec_ans == '1':
+                    username = input('Input a username: ')
+                    role = input('Input a role: ')
+                    view_q = 'GRANT ' + role + ' TO ' + username
+                    cursor.execute(view_q)
+                    connection.commit()
+                    connection.close()
+                    print('Role granted.')
+                    break
+
+                elif sec_ans == '2':
+                    username = input('Input a username: ')
+                    role = input('Input a role: ')
+                    view_q = 'REVOKE ' + role + ' FROM ' + username
+                    cursor.execute(view_q)
+                    connection.commit()
+                    connection.close()
+                    print('Role revoked.')
+                    break
+
+                else:
+                    print('Invalid request. Input 1 or 2.')
+            elif main_ans == '7':
+                break
             else:
-                print('Invalid request. Input 1, 2, 3, or 4.') # return back to question
+                print('Invalid request. Input 1, 2, 3, 4, 5, 6, or 7') # return back to question
     except:
         print('Error')
-        break
+    break
