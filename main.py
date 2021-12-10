@@ -215,30 +215,6 @@ CREATE ROLE patient_user LOGIN NOINHERIT;
 GRANT ALL PRIVILEGES ON TABLE Patient TO patient_user;
 '''
 
-# random_data = '''
-# INSERT INTO Organ_Donor (name, blood_type, last_donation_time, organ_name)
-# VALUES ('Bob', 'A', '02/20/2000', 'liver'), ('Bob2', 'AB', '02/20/2001', 'liver'),
-# ('Bob3', '0', '02/20/2000', 'liver');
-
-# INSERT INTO Blood_Donor (name, blood_type, last_donation_time, region)
-# VALUES ('Jack', 'B', '01/10/2010', 'Chicago','IL'), ('Jack2', 'B', '02/10/2010', 'Chicago','IL'),
-# ('Jack3', 'B', '03/10/2010', 'Chicagoo','IL'), ('Jack4', 'B', '04/10/2010', 'Chicagoo','IL');
-
-# INSERT INTO Patient (name, blood_type)
-# VALUES ('patient1', 'A'), ('patient1', 'B'), ('patient1', 'AB'), ('patient4', '0');
-
-# INSERT INTO Hospital (name, region)
-# VALUES ('Charlie', 'Chicago, IL'), ('Bernie', 'Chicag, IL'),
-# ('Smith', 'Chicago, IL'), ('GREATEST_HOSPITAL', 'Chica, IL');
-
-# INSERT INTO Doctor (name, number_of_operations)
-# VALUES ('doctor1', 2), ('doctor2', 0), ('doctor1', 1), ('doctor1', 2);
-
-# INSERT INTO Donor_Application (blood_type, age, last_donation_time)
-# VALUES ('A', 25, '10/20/2015'), ('B', 24, '10/20/2016'),
-# ('AB', 20, '10/20/2010'), ('0', 29, '10/20/2011');
-# '''
-
 # Drop Tables
 drop_Organ_Donor_table = '''
 DROP TABLE Organ_Donor CASCADE;
@@ -561,18 +537,16 @@ while(True):
                     cursor.execute(create_Organ_Donor_index)
                     cursor.execute(create_Hospital_Region_index)
                     cursor.execute(create_Doctor_Specialization_index)
-                    print('Tables are created.')
-
-                    # random data
-                    # cursor.execute(random_data)
                     connection.commit()
+                    print('Tables are created.')
                     
+                    # Roles
                     cursor.execute(create_Admin_role)
                     cursor.execute(create_Doctor_User_role)
                     cursor.execute(create_Patient_User_role)
-                    print('Roles are created.')
-
                     connection.commit()
+                    print('Roles are created.')
+                    
                     connection.close()
                 except:
                     print('Error: Any error has occurred.')
