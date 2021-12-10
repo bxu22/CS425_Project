@@ -387,9 +387,9 @@ while(True):
             #view tables & lists
             elif main_ans == '2': # (!)update queries related to view like blood_donor_list
                 view_q = '' #this is the query that is going to be run after the if-conditions.
-                print('View: Organ_Donor_List, Blood_Donor_List, Donor_Match_List, OperationDonor, Organ, Patient')
+                print('View: Organ_Donor_List, Blood_Donor_List, Donor_Match_List, Operations_Report, Organ, Patient')
                 view_name = input('Which view do you want: ')
-                if view_name == 'Donor' or view_name == 'Organ' or view_name == 'Patient':
+                if view_name == 'Organ' or view_name == 'Patient':
                     view_q = 'SELECT * FROM ' + view_name
                     cursor.execute(view_q)
                     datas = cursor.fetchall()
